@@ -44,13 +44,12 @@ jobs:
 
     - name: Create database schema
       run: |
-        cd SecureVersion
-        cat securedatabase.sql | mysql -h127.0.0.1 -uroot -proot
+        mysql -h127.0.0.1 -uroot -proot < SecureVersion/securedatabase.sql
 
     - name: Check PHP syntax errors
       run: find . -type f -name '*.php' -print0 | xargs -0 -n1 php -l
 
     - name: Run login system tests
       run: |
-        cd SecureVersion
-        php ci_test.php
+        ls -la SecureVersion/
+        php SecureVersion/ci_test.php
