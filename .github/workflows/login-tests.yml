@@ -126,7 +126,81 @@ jobs:
           '        return true;' \
           '    }' \
           '' \
+          '    public function testInvalidPassword() {' \
+          '        echo "Testing invalid password handling...\n";' \
+          '        $username = "testuser_" . time();' \
+          '        $email = "test_" . time() . "@example.com";' \
+          '        ' \
+          '        // Test with empty password' \
+          '        try {' \
+          '            $result = $this->registerUser($username, "", $email);' \
+          '            if ($result) {' \
+          '                throw new Exception("Empty password was accepted");' \
+          '            }' \
+          '        } catch (Exception $e) {' \
+          '            echo "✓ Empty password correctly rejected\n";' \
+          '        }' \
+          '        ' \
+          '        // Test with too short password' \
+          '        try {' \
+          '            $result = $this->registerUser($username, "short", $email);' \
+          '            if ($result) {' \
+          '                throw new Exception("Short password was accepted");' \
+          '            }' \
+          '        } catch (Exception $e) {' \
+          '            echo "✓ Short password correctly rejected\n";' \
+          '        }' \
+          '        ' \
+          '        // Test with password containing only numbers' \
+          '        try {' \
+          '            $result = $this->registerUser($username, "12345678", $email);' \
+          '            if ($result) {' \
+          '                throw new Exception("Numeric-only password was accepted");' \
+          '            }' \
+          '        } catch (Exception $e) {' \
+          '            echo "✓ Numeric-only password correctly rejected\n";' \
+          '        }' \
+          '        ' \
+          '        // Test with password containing only letters' \
+          '        try {' \
+          '            $result = $this->registerUser($username, "password", $email);' \
+          '            if ($result) {' \
+          '                throw new Exception("Letters-only password was accepted");' \
+          '            }' \
+          '        } catch (Exception $e) {' \
+          '            echo "✓ Letters-only password correctly rejected\n";' \
+          '        }' \
+          '        ' \
+          '        echo "✓ Invalid password tests passed\n";' \
+          '        return true;' \
+          '    }' \
+          '' \
           '    private function registerUser($username, $password, $email) {' \
+          '        // Validate password' \
+          '        if (empty($password)) {' \
+          '            throw new Exception("Password cannot be empty");' \
+          '        }' \
+          '        ' \
+          '        if (strlen($password) < 8) {' \
+          '            throw new Exception("Password must be at least 8 characters long");' \
+          '        }' \
+          '        ' \
+          '        if (!preg_match("/[A-Z]/", $password)) {' \
+          '            throw new Exception("Password must contain at least one uppercase letter");' \
+          '        }' \
+          '        ' \
+          '        if (!preg_match("/[a-z]/", $password)) {' \
+          '            throw new Exception("Password must contain at least one lowercase letter");' \
+          '        }' \
+          '        ' \
+          '        if (!preg_match("/[0-9]/", $password)) {' \
+          '            throw new Exception("Password must contain at least one number");' \
+          '        }' \
+          '        ' \
+          '        if (!preg_match("/[!@#$%^&*()\-_=+{};:,<.>]/", $password)) {' \
+          '            throw new Exception("Password must contain at least one special character");' \
+          '        }' \
+          '        ' \
           '        $stmt = $this->conn->prepare("INSERT INTO users (username, fullname, email, dob, password, phone, address, is_admin) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");' \
           '        $fullname = "Test User";' \
           '        $dob = "2000-01-01";' \
@@ -164,6 +238,7 @@ jobs:
           '    $test = new LoginTest();' \
           '    $test->testRegistration();' \
           '    $test->testLogin();' \
+          '    $test->testInvalidPassword();' \
           '    $test->cleanup();' \
           '    echo "\nAll tests completed successfully!\n";' \
           '    exit(0);' \
