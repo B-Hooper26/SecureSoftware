@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: securedatabase
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.2'
+        extensions: mbstring, intl, pdo_mysql, zip, dom
+        coverage: none
+
+    - name: Wait for MySQL to be ready
+      run: |
+        for i in {1..30}; do
+          if mysqladmin ping -h127.0.0.1 -uroot -proot --silent; then
+            break
+          fi
+          sleep 2
+        done
+
+    - name: Import database schema
+      run: mysql -h127.0.0.1 -uroot -proot securedatabase < securedatabase.sql
+
+    - name: Check PHP syntax errors
+      run: find . -type f -name '*.php' -print0 | xargs -0 -n1 php -l
+
+    - name: Run login test script
+      run: php ci_test.php
