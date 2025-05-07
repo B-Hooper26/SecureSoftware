@@ -43,7 +43,7 @@ jobs:
         done
 
     - name: Import database schema
-      run: mysql -h127.0.0.1 -uroot -proot securedatabase < securedatabase.sql
+      run: mysql -h127.0.0.1 -uroot -proot securedatabase < SecureVersion/securedatabase.sql
 
     - name: Check PHP syntax errors
       run: find . -type f -name '*.php' -print0 | xargs -0 -n1 php -l
