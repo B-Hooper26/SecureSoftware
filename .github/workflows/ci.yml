@@ -61,99 +61,95 @@ jobs:
         mkdir -p SecureVersion
         
         # Create config.php
-        cat > SecureVersion/config.php << 'EOT'
-<?php
-$DB_SERVER = "127.0.0.1";
-$DB_USERNAME = "root";
-$DB_PASSWORD = "root";
-$DB_NAME = "securedatabase";
-
-$conn = new mysqli($DB_SERVER, $DB_USERNAME, $DB_PASSWORD, $DB_NAME);
-
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-EOT
+        printf '%s\n' '<?php' \
+          '$DB_SERVER = "127.0.0.1";' \
+          '$DB_USERNAME = "root";' \
+          '$DB_PASSWORD = "root";' \
+          '$DB_NAME = "securedatabase";' \
+          '' \
+          '$conn = new mysqli($DB_SERVER, $DB_USERNAME, $DB_PASSWORD, $DB_NAME);' \
+          '' \
+          'if ($conn->connect_error) {' \
+          '    die("Connection failed: " . $conn->connect_error);' \
+          '}' > SecureVersion/config.php
 
         # Create ci_test.php
-        cat > SecureVersion/ci_test.php << 'EOT'
-<?php
-require_once "config.php";
-
-function run_test($name, $test_func) {
-    echo "Running test: $name\n";
-    try {
-        $result = $test_func();
-        echo "✓ Test passed: $name\n";
-        return true;
-    } catch (Exception $e) {
-        echo "✗ Test failed: $name\n";
-        echo "  Error: " . $e->getMessage() . "\n";
-        return false;
-    }
-}
-
-// Test database connection
-run_test("Database Connection", function() use ($conn) {
-    if ($conn->connect_error) {
-        throw new Exception("Connection failed: " . $conn->connect_error);
-    }
-    return true;
-});
-
-// Test user registration
-run_test("User Registration", function() use ($conn) {
-    $test_username = "testuser_" . time();
-    $test_password = "Test123!@#";
-    $test_email = "test_" . time() . "@example.com";
-    
-    $stmt = $conn->prepare("INSERT INTO users (username, fullname, email, dob, password, phone, address, is_admin) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-    $fullname = "Test User";
-    $dob = "2000-01-01";
-    $hashed_password = password_hash($test_password, PASSWORD_DEFAULT);
-    $phone = "1234567890";
-    $address = "123 Test St";
-    $is_admin = 0;
-    
-    $stmt->bind_param("sssssssi", $test_username, $fullname, $test_email, $dob, $hashed_password, $phone, $address, $is_admin);
-    
-    if (!$stmt->execute()) {
-        throw new Exception("Failed to register test user: " . $stmt->error);
-    }
-    
-    return true;
-});
-
-// Test password verification
-run_test("Password Verification", function() use ($conn) {
-    $test_password = "Test123!@#";
-    $stmt = $conn->prepare("SELECT password FROM users WHERE username LIKE \"testuser_%\" LIMIT 1");
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $user = $result->fetch_assoc();
-    
-    if (!$user) {
-        throw new Exception("No test user found for password verification");
-    }
-    
-    if (!password_verify($test_password, $user["password"])) {
-        throw new Exception("Password verification failed");
-    }
-    
-    return true;
-});
-
-// Clean up test data
-run_test("Cleanup Test Data", function() use ($conn) {
-    $stmt = $conn->prepare("DELETE FROM users WHERE username LIKE \"testuser_%\"");
-    if (!$stmt->execute()) {
-        throw new Exception("Failed to clean up test data: " . $stmt->error);
-    }
-    return true;
-});
-
-echo "\nAll tests completed!\n";
-EOT
+        printf '%s\n' '<?php' \
+          'require_once "config.php";' \
+          '' \
+          'function run_test($name, $test_func) {' \
+          '    echo "Running test: $name\n";' \
+          '    try {' \
+          '        $result = $test_func();' \
+          '        echo "✓ Test passed: $name\n";' \
+          '        return true;' \
+          '    } catch (Exception $e) {' \
+          '        echo "✗ Test failed: $name\n";' \
+          '        echo "  Error: " . $e->getMessage() . "\n";' \
+          '        return false;' \
+          '    }' \
+          '}' \
+          '' \
+          '// Test database connection' \
+          'run_test("Database Connection", function() use ($conn) {' \
+          '    if ($conn->connect_error) {' \
+          '        throw new Exception("Connection failed: " . $conn->connect_error);' \
+          '    }' \
+          '    return true;' \
+          '});' \
+          '' \
+          '// Test user registration' \
+          'run_test("User Registration", function() use ($conn) {' \
+          '    $test_username = "testuser_" . time();' \
+          '    $test_password = "Test123!@#";' \
+          '    $test_email = "test_" . time() . "@example.com";' \
+          '    ' \
+          '    $stmt = $conn->prepare("INSERT INTO users (username, fullname, email, dob, password, phone, address, is_admin) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");' \
+          '    $fullname = "Test User";' \
+          '    $dob = "2000-01-01";' \
+          '    $hashed_password = password_hash($test_password, PASSWORD_DEFAULT);' \
+          '    $phone = "1234567890";' \
+          '    $address = "123 Test St";' \
+          '    $is_admin = 0;' \
+          '    ' \
+          '    $stmt->bind_param("sssssssi", $test_username, $fullname, $test_email, $dob, $hashed_password, $phone, $address, $is_admin);' \
+          '    ' \
+          '    if (!$stmt->execute()) {' \
+          '        throw new Exception("Failed to register test user: " . $stmt->error);' \
+          '    }' \
+          '    ' \
+          '    return true;' \
+          '});' \
+          '' \
+          '// Test password verification' \
+          'run_test("Password Verification", function() use ($conn) {' \
+          '    $test_password = "Test123!@#";' \
+          '    $stmt = $conn->prepare("SELECT password FROM users WHERE username LIKE \"testuser_%\" LIMIT 1");' \
+          '    $stmt->execute();' \
+          '    $result = $stmt->get_result();' \
+          '    $user = $result->fetch_assoc();' \
+          '    ' \
+          '    if (!$user) {' \
+          '        throw new Exception("No test user found for password verification");' \
+          '    }' \
+          '    ' \
+          '    if (!password_verify($test_password, $user["password"])) {' \
+          '        throw new Exception("Password verification failed");' \
+          '    }' \
+          '    ' \
+          '    return true;' \
+          '});' \
+          '' \
+          '// Clean up test data' \
+          'run_test("Cleanup Test Data", function() use ($conn) {' \
+          '    $stmt = $conn->prepare("DELETE FROM users WHERE username LIKE \"testuser_%\"");' \
+          '    if (!$stmt->execute()) {' \
+          '        throw new Exception("Failed to clean up test data: " . $stmt->error);' \
+          '    }' \
+          '    return true;' \
+          '});' \
+          '' \
+          'echo "\nAll tests completed!\n";' > SecureVersion/ci_test.php
 
     - name: Create database schema
       run: |
