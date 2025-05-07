@@ -17,3 +17,7 @@
 # Added file existence checks to workflow
 # Improved error handling for database import
 # Timestamp: 2024-03-07 14:55
+
+# Added detailed file debugging to workflow
+# Improved SQL file location checking
+# Timestamp: 2024-03-07 15:00
