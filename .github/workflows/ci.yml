@@ -42,13 +42,15 @@ jobs:
           sleep 2
         done
 
-    - name: Import database schema
+    - name: Create database schema
       run: |
         cd SecureVersion
-        mysql -h127.0.0.1 -uroot -proot securedatabase < securedatabase.sql
+        cat securedatabase.sql | mysql -h127.0.0.1 -uroot -proot
 
     - name: Check PHP syntax errors
       run: find . -type f -name '*.php' -print0 | xargs -0 -n1 php -l
 
-    - name: Run login test script
-      run: php ci_test.php
+    - name: Run login system tests
+      run: |
+        cd SecureVersion
+        php ci_test.php
