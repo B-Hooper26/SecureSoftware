@@ -1,3 +1,3 @@
 # Fixing database import path in workflow
-# Updated path to securedatabase.sql in GitHub Actions
-# Timestamp: 2024-03-07 14:30
+# Changed to cd into SecureVersion directory before importing
+# Timestamp: 2024-03-07 14:35
