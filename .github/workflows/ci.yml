@@ -140,9 +140,51 @@ jobs:
           '    return true;' \
           '});' \
           '' \
+          '// Test unauthorized admin access' \
+          'run_test("Unauthorized Admin Access", function() use ($conn) {' \
+          '    // Create a regular user' \
+          '    $regular_username = "regular_" . time();' \
+          '    $regular_password = "Regular123!@#";' \
+          '    $regular_email = "regular_" . time() . "@example.com";' \
+          '    ' \
+          '    $stmt = $conn->prepare("INSERT INTO users (username, fullname, email, dob, password, phone, address, is_admin) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");' \
+          '    $fullname = "Regular User";' \
+          '    $dob = "2000-01-01";' \
+          '    $hashed_password = password_hash($regular_password, PASSWORD_DEFAULT);' \
+          '    $phone = "1234567890";' \
+          '    $address = "123 Regular St";' \
+          '    $is_admin = 0;' \
+          '    ' \
+          '    $stmt->bind_param("sssssssi", $regular_username, $fullname, $regular_email, $dob, $hashed_password, $phone, $address, $is_admin);' \
+          '    ' \
+          '    if (!$stmt->execute()) {' \
+          '        throw new Exception("Failed to create regular user: " . $stmt->error);' \
+          '    }' \
+          '    ' \
+          '    // Try to access admin functionality' \
+          '    $stmt = $conn->prepare("SELECT * FROM users WHERE username = ? AND is_admin = 1");' \
+          '    $stmt->bind_param("s", $regular_username);' \
+          '    $stmt->execute();' \
+          '    $result = $stmt->get_result();' \
+          '    ' \
+          '    if ($result->num_rows > 0) {' \
+          '        throw new Exception("Regular user was able to access admin privileges");' \
+          '    }' \
+          '    ' \
+          '    // Try to modify admin status' \
+          '    $stmt = $conn->prepare("UPDATE users SET is_admin = 1 WHERE username = ?");' \
+          '    $stmt->bind_param("s", $regular_username);' \
+          '    ' \
+          '    if ($stmt->execute()) {' \
+          '        throw new Exception("Regular user was able to modify admin status");' \
+          '    }' \
+          '    ' \
+          '    return true;' \
+          '});' \
+          '' \
           '// Clean up test data' \
           'run_test("Cleanup Test Data", function() use ($conn) {' \
-          '    $stmt = $conn->prepare("DELETE FROM users WHERE username LIKE \"testuser_%\"");' \
+          '    $stmt = $conn->prepare("DELETE FROM users WHERE username LIKE \"testuser_%\" OR username LIKE \"regular_%\"");' \
           '    if (!$stmt->execute()) {' \
           '        throw new Exception("Failed to clean up test data: " . $stmt->error);' \
           '    }' \
