@@ -44,16 +44,24 @@ jobs:
 
     - name: Setup working directory
       run: |
+        echo "Current directory structure:"
         pwd
         ls -la
-        cd SecureVersion
-        pwd
-        ls -la
+        echo "\nCreating SecureVersion directory..."
+        mkdir -p SecureVersion
+        echo "\nCopying files..."
+        cp -r SecureVersion/* SecureVersion/ 2>/dev/null || true
+        echo "\nVerifying files:"
+        ls -la SecureVersion/
 
     - name: Import database schema
       run: |
-        cd SecureVersion
-        mysql -h127.0.0.1 -uroot -proot securedatabase < securedatabase.sql
+        echo "Current directory:"
+        pwd
+        echo "\nListing files:"
+        ls -la
+        echo "\nImporting database..."
+        mysql -h127.0.0.1 -uroot -proot securedatabase < SecureVersion/securedatabase.sql
 
     - name: Check PHP syntax errors
       run: |
