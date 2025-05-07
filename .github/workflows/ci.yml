@@ -42,14 +42,24 @@ jobs:
           sleep 2
         done
 
+    - name: List directory contents
+      run: |
+        pwd
+        ls -la
+        ls -la SecureVersion/
+
     - name: Import database schema
       run: |
-        mysql -h127.0.0.1 -uroot -proot securedatabase < SecureVersion/securedatabase.sql
+        if [ -f "SecureVersion/securedatabase.sql" ]; then
+          mysql -h127.0.0.1 -uroot -proot securedatabase < SecureVersion/securedatabase.sql
+        else
+          echo "Error: securedatabase.sql not found"
+          exit 1
+        fi
 
     - name: Check PHP syntax errors
       run: find . -type f -name '*.php' -print0 | xargs -0 -n1 php -l
 
     - name: Run login system tests
       run: |
-        ls -la SecureVersion/
         php SecureVersion/ci_test.php
