@@ -79,5 +79,13 @@ jobs:
 
     - name: Run login system tests
       run: |
+        echo "Current directory:"
+        pwd
+        echo "\nChanging to SecureVersion directory..."
         cd SecureVersion
+        echo "\nCurrent directory after cd:"
+        pwd
+        echo "\nListing files in current directory:"
+        ls -la
+        echo "\nRunning tests..."
         php ci_test.php
