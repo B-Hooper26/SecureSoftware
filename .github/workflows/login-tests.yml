@@ -128,47 +128,37 @@ jobs:
           '' \
           '    public function testInvalidPassword() {' \
           '        echo "Testing invalid password handling...\n";' \
-          '        $username = "testuser_" . time();' \
-          '        $email = "test_" . time() . "@example.com";' \
           '        ' \
           '        // Test with empty password' \
-          '        try {' \
-          '            $result = $this->registerUser($username, "", $email);' \
-          '            if ($result) {' \
-          '                throw new Exception("Empty password was accepted");' \
-          '            }' \
-          '        } catch (Exception $e) {' \
-          '            echo "✓ Empty password correctly rejected\n";' \
+          '        $username = "testuser_empty_" . time();' \
+          '        $email = "test_empty_" . time() . "@example.com";' \
+          '        $result = $this->registerUser($username, "", $email);' \
+          '        if ($result) {' \
+          '            throw new Exception("Empty password was accepted");' \
           '        }' \
           '        ' \
           '        // Test with too short password' \
-          '        try {' \
-          '            $result = $this->registerUser($username, "short", $email);' \
-          '            if ($result) {' \
-          '                throw new Exception("Short password was accepted");' \
-          '            }' \
-          '        } catch (Exception $e) {' \
-          '            echo "✓ Short password correctly rejected\n";' \
+          '        $username = "testuser_short_" . time();' \
+          '        $email = "test_short_" . time() . "@example.com";' \
+          '        $result = $this->registerUser($username, "short", $email);' \
+          '        if ($result) {' \
+          '            throw new Exception("Short password was accepted");' \
           '        }' \
           '        ' \
           '        // Test with password containing only numbers' \
-          '        try {' \
-          '            $result = $this->registerUser($username, "12345678", $email);' \
-          '            if ($result) {' \
-          '                throw new Exception("Numeric-only password was accepted");' \
-          '            }' \
-          '        } catch (Exception $e) {' \
-          '            echo "✓ Numeric-only password correctly rejected\n";' \
+          '        $username = "testuser_numbers_" . time();' \
+          '        $email = "test_numbers_" . time() . "@example.com";' \
+          '        $result = $this->registerUser($username, "12345678", $email);' \
+          '        if ($result) {' \
+          '            throw new Exception("Numeric-only password was accepted");' \
           '        }' \
           '        ' \
           '        // Test with password containing only letters' \
-          '        try {' \
-          '            $result = $this->registerUser($username, "password", $email);' \
-          '            if ($result) {' \
-          '                throw new Exception("Letters-only password was accepted");' \
-          '            }' \
-          '        } catch (Exception $e) {' \
-          '            echo "✓ Letters-only password correctly rejected\n";' \
+          '        $username = "testuser_letters_" . time();' \
+          '        $email = "test_letters_" . time() . "@example.com";' \
+          '        $result = $this->registerUser($username, "password", $email);' \
+          '        if ($result) {' \
+          '            throw new Exception("Letters-only password was accepted");' \
           '        }' \
           '        ' \
           '        echo "✓ Invalid password tests passed\n";' \
