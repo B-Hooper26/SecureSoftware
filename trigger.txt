@@ -22,9 +22,9 @@
 # Improved SQL file location checking
 # Timestamp: 2024-03-07 15:00
 
-# Changed to create database schema inline in workflow
-# Removed dependency on external SQL file
-# Timestamp: 2024-03-07 15:05
+# Changed to create database schema inline
+# Added repository structure debugging
+# Timestamp: 2024-03-07 15:20
 
 # Fixed directory issues in workflow
 # Changed to correct directory before running commands
