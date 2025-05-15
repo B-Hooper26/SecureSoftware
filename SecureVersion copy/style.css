@@ -1,0 +1,123 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap');
+
+/* Styles everything */
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Poppins", serif;
+}
+ /*Styles the body */
+body{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(to right, #e2e2e2, #c9d6ff);
+    color: black;
+}
+
+/* Styles the container */
+.container{
+    margin: 0 15px;
+}
+
+/*Styles the form */
+.form-box{
+    width: 100%;
+    max-width: 450px;
+    padding: 30px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+/*Styles the heading */
+h2{
+    font-size: 34px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+/*Styles the input */
+input, textarea{
+    width: 100%;
+    padding: 12px;
+    background: #eee;
+    border-radius: 6px;
+    border: none;
+    outline: none;
+    font-size: 16px;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+/* Specific styles for textarea */
+textarea {
+    resize: vertical;
+    min-height: 100px;
+    font-family: "Poppins", serif;
+}
+
+/* Styles for admin checkbox section */
+.admin-check {
+    margin-bottom: 20px;
+}
+
+.admin-check label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    color: #333;
+}
+
+.admin-check input[type="checkbox"] {
+    width: auto;
+    margin: 0;
+    cursor: pointer;
+}
+
+/*Styles the button */
+button{
+    width: 100%;
+    padding: 12px;
+    background:thistle;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    color: black;
+    font-weight: 500;
+    margin-bottom: 20px;
+    transition: 0.5s;
+}
+/*Chnage colour of button when user hovers over it */
+button:hover{
+    background:#6884d3;
+}
+
+/*Styles the p text */
+p {
+    font-size: 14px;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+/* Underline link when user hovers over it */
+p a{
+    text-decoration: none;
+}
+p a:hover{
+    text-decoration: underline;
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
+    .container {
+        padding: 10px;
+    }
+    
+    .form-box {
+        padding: 20px;
+    }
+}
