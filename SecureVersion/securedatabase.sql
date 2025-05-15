@@ -17,8 +17,29 @@ CREATE TABLE IF NOT EXISTS users (
     CHECK (username <> ''),
     CHECK (fullname <> ''),
     CHECK (email REGEXP '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$'),
-    CHECK (dob <= CURDATE()),
     CHECK (CHAR_LENGTH(password) >= 8),
-    CHECK (phone REGEXP '^[0-9\-\+]{9,15}$'),
+    CHECK (phone REGEXP '^[0-9\\-\\+]{9,15}$'),
     CHECK (address <> '')
-); 
+);
+
+DELIMITER $$
+CREATE TRIGGER dob_no_future BEFORE INSERT ON users
+FOR EACH ROW
+BEGIN
+    IF NEW.dob > CURDATE() THEN
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'Date of birth cannot be in the future';
+    END IF;
+END$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE TRIGGER dob_no_future_update BEFORE UPDATE ON users
+FOR EACH ROW
+BEGIN
+    IF NEW.dob > CURDATE() THEN
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'Date of birth cannot be in the future';
+    END IF;
+END$$
+DELIMITER ; 
