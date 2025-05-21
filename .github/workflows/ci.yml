@@ -1,0 +1,225 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: securedatabase
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.2'
+        extensions: mbstring, intl, pdo_mysql, zip, dom
+        coverage: none
+
+    - name: Wait for MySQL to be ready
+      run: |
+        for i in {1..30}; do
+          if mysqladmin ping -h127.0.0.1 -uroot -proot --silent; then
+            break
+          fi
+          sleep 2
+        done
+
+    - name: Verify repository contents
+      run: |
+        echo "Repository root:"
+        pwd
+        ls -la
+        echo "\nSecureVersion directory:"
+        ls -la SecureVersion/
+        echo "\nAll PHP files in repository:"
+        find . -name "*.php"
+        echo "\nAll files in repository:"
+        find . -type f
+
+    - name: Create test files
+      run: |
+        mkdir -p SecureVersion
+        
+        # Create config.php
+        printf '%s\n' '<?php' \
+          '$DB_SERVER = "127.0.0.1";' \
+          '$DB_USERNAME = "root";' \
+          '$DB_PASSWORD = "root";' \
+          '$DB_NAME = "securedatabase";' \
+          '' \
+          '$conn = new mysqli($DB_SERVER, $DB_USERNAME, $DB_PASSWORD, $DB_NAME);' \
+          '' \
+          'if ($conn->connect_error) {' \
+          '    die("Connection failed: " . $conn->connect_error);' \
+          '}' > SecureVersion/config.php
+
+        # Create ci_test.php
+        printf '%s\n' '<?php' \
+          'require_once "config.php";' \
+          '' \
+          'function run_test($name, $test_func) {' \
+          '    echo "Running test: $name\n";' \
+          '    try {' \
+          '        $result = $test_func();' \
+          '        echo "✓ Test passed: $name\n";' \
+          '        return true;' \
+          '    } catch (Exception $e) {' \
+          '        echo "✗ Test failed: $name\n";' \
+          '        echo "  Error: " . $e->getMessage() . "\n";' \
+          '        return false;' \
+          '    }' \
+          '}' \
+          '' \
+          '// Test database connection' \
+          'run_test("Database Connection", function() use ($conn) {' \
+          '    if ($conn->connect_error) {' \
+          '        throw new Exception("Connection failed: " . $conn->connect_error);' \
+          '    }' \
+          '    return true;' \
+          '});' \
+          '' \
+          '// Test user registration' \
+          'run_test("User Registration", function() use ($conn) {' \
+          '    $test_username = "testuser_" . time();' \
+          '    $test_password = "Test123!@#";' \
+          '    $test_email = "test_" . time() . "@example.com";' \
+          '    ' \
+          '    $stmt = $conn->prepare("INSERT INTO users (username, fullname, email, dob, password, phone, address, is_admin) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");' \
+          '    $fullname = "Test User";' \
+          '    $dob = "2000-01-01";' \
+          '    $hashed_password = password_hash($test_password, PASSWORD_DEFAULT);' \
+          '    $phone = "1234567890";' \
+          '    $address = "123 Test St";' \
+          '    $is_admin = 0;' \
+          '    ' \
+          '    $stmt->bind_param("sssssssi", $test_username, $fullname, $test_email, $dob, $hashed_password, $phone, $address, $is_admin);' \
+          '    ' \
+          '    if (!$stmt->execute()) {' \
+          '        throw new Exception("Failed to register test user: " . $stmt->error);' \
+          '    }' \
+          '    ' \
+          '    return true;' \
+          '});' \
+          '' \
+          '// Test password verification' \
+          'run_test("Password Verification", function() use ($conn) {' \
+          '    $test_password = "Test123!@#";' \
+          '    $stmt = $conn->prepare("SELECT password FROM users WHERE username LIKE \"testuser_%\" LIMIT 1");' \
+          '    $stmt->execute();' \
+          '    $result = $stmt->get_result();' \
+          '    $user = $result->fetch_assoc();' \
+          '    ' \
+          '    if (!$user) {' \
+          '        throw new Exception("No test user found for password verification");' \
+          '    }' \
+          '    ' \
+          '    if (!password_verify($test_password, $user["password"])) {' \
+          '        throw new Exception("Password verification failed");' \
+          '    }' \
+          '    ' \
+          '    return true;' \
+          '});' \
+          '' \
+          '// Test unauthorized admin access' \
+          'run_test("Unauthorized Admin Access", function() use ($conn) {' \
+          '    // Create a regular user' \
+          '    $regular_username = "regular_" . time();' \
+          '    $regular_password = "Regular123!@#";' \
+          '    $regular_email = "regular_" . time() . "@example.com";' \
+          '    ' \
+          '    $stmt = $conn->prepare("INSERT INTO users (username, fullname, email, dob, password, phone, address, is_admin) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");' \
+          '    $fullname = "Regular User";' \
+          '    $dob = "2000-01-01";' \
+          '    $hashed_password = password_hash($regular_password, PASSWORD_DEFAULT);' \
+          '    $phone = "1234567890";' \
+          '    $address = "123 Regular St";' \
+          '    $is_admin = 0;' \
+          '    ' \
+          '    $stmt->bind_param("sssssssi", $regular_username, $fullname, $regular_email, $dob, $hashed_password, $phone, $address, $is_admin);' \
+          '    ' \
+          '    if (!$stmt->execute()) {' \
+          '        throw new Exception("Failed to create regular user: " . $stmt->error);' \
+          '    }' \
+          '    ' \
+          '    // Try to access admin functionality' \
+          '    $stmt = $conn->prepare("SELECT * FROM users WHERE username = ? AND is_admin = 1");' \
+          '    $stmt->bind_param("s", $regular_username);' \
+          '    $stmt->execute();' \
+          '    $result = $stmt->get_result();' \
+          '    ' \
+          '    if ($result->num_rows > 0) {' \
+          '        throw new Exception("Regular user was able to access admin privileges");' \
+          '    }' \
+          '    ' \
+          '    // Try to modify admin status' \
+          '    $stmt = $conn->prepare("UPDATE users SET is_admin = 1 WHERE username = ?");' \
+          '    $stmt->bind_param("s", $regular_username);' \
+          '    ' \
+          '    if ($stmt->execute()) {' \
+          '        throw new Exception("Regular user was able to modify admin status");' \
+          '    }' \
+          '    ' \
+          '    return true;' \
+          '});' \
+          '' \
+          '// Clean up test data' \
+          'run_test("Cleanup Test Data", function() use ($conn) {' \
+          '    $stmt = $conn->prepare("DELETE FROM users WHERE username LIKE \"testuser_%\" OR username LIKE \"regular_%\"");' \
+          '    if (!$stmt->execute()) {' \
+          '        throw new Exception("Failed to clean up test data: " . $stmt->error);' \
+          '    }' \
+          '    return true;' \
+          '});' \
+          '' \
+          'echo "\nAll tests completed!\n";' > SecureVersion/ci_test.php
+
+    - name: Create database schema
+      run: |
+        echo "Creating database schema..."
+        mysql -h127.0.0.1 -uroot -proot << EOF
+        CREATE DATABASE IF NOT EXISTS securedatabase;
+        USE securedatabase;
+
+        CREATE TABLE IF NOT EXISTS users (
+            id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+            username VARCHAR(50) NOT NULL UNIQUE,
+            fullname VARCHAR(100) NOT NULL,
+            email VARCHAR(100) NOT NULL UNIQUE,
+            dob DATE NOT NULL,
+            password VARCHAR(255) NOT NULL,
+            phone VARCHAR(20) NOT NULL,
+            address TEXT NOT NULL,
+            is_admin TINYINT(1) NOT NULL DEFAULT 0,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        );
+        EOF
+
+    - name: Check PHP syntax errors
+      run: |
+        cd SecureVersion
+        find . -type f -name '*.php' -print0 | xargs -0 -n1 php -l
+
+    - name: Run login system tests
+      run: |
+        cd SecureVersion
+        php ci_test.php
