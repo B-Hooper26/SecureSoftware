@@ -1,11 +1,8 @@
 <?php
-<<<<<<< HEAD
+
 require_once 'unsecure_config.php';
 $config = require 'unsecure_config.php';
-=======
-require_once 'config.php';
-$config = require 'config.php';
->>>>>>> 7ae2812b34732bf97338b97e0470cfaba8afc6f2
+
 $conn = new mysqli(
     $config['DB_SERVER'],
     $config['DB_USERNAME'],
