@@ -5,7 +5,11 @@ if (!isset($_SESSION['username']) || !isset($_SESSION['is_admin']) || !$_SESSION
     exit;
 }
 
+<<<<<<< HEAD
 require_once 'secure_config.php';
+=======
+require_once 'config.php';
+>>>>>>> 7ae2812b34732bf97338b97e0470cfaba8afc6f2
 
 $is_admin = $_SESSION['is_admin'] ?? 0;
 $db_username = htmlspecialchars($_SESSION['username']);

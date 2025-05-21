@@ -6,7 +6,11 @@ if (!isset($_SESSION['username'])) {
 }
 $user_id = $_SESSION['user_id'];
 
+<<<<<<< HEAD
 require_once 'secure_config.php';
+=======
+require_once 'config.php';
+>>>>>>> 7ae2812b34732bf97338b97e0470cfaba8afc6f2
 
 // Fetch current password hash
 $stmt = $conn->prepare('SELECT password FROM users WHERE id = ?');

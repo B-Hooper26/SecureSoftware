@@ -4,7 +4,11 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
 session_start();
+<<<<<<< HEAD
 require_once 'secure_config.php';
+=======
+require_once 'config.php';
+>>>>>>> 7ae2812b34732bf97338b97e0470cfaba8afc6f2
 
 $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {

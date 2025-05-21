@@ -3,7 +3,11 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
+<<<<<<< HEAD
 require_once 'secure_config.php';
+=======
+require_once 'config.php';
+>>>>>>> 7ae2812b34732bf97338b97e0470cfaba8afc6f2
 
 function is_strong_password($password) {
     return strlen($password) >= 8 &&

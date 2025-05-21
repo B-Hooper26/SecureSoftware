@@ -8,7 +8,11 @@ $is_admin = $_SESSION['is_admin'] ?? 0;
 $username = htmlspecialchars($_SESSION['username']);
 $user_id = $_SESSION['user_id'];
 
+<<<<<<< HEAD
 require_once 'secure_config.php';
+=======
+require_once 'config.php';
+>>>>>>> 7ae2812b34732bf97338b97e0470cfaba8afc6f2
 
 // Fetch user details
 $stmt = $conn->prepare('SELECT username, fullname, email, dob, phone, address, is_admin FROM users WHERE id = ?');
