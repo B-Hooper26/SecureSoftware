@@ -19,7 +19,11 @@ body{
 
 /* Styles the container */
 .container{
-    margin: 0 15px;
+    width: 100vw;
+    min-height: 100vh;
+    margin: 0;
+    position: relative;
+    display: block;
 }
 
 /*Styles the form */
@@ -120,4 +124,24 @@ p a:hover{
     .form-box {
         padding: 20px;
     }
+}
+
+.logo-row {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: auto;
+    display: flex;
+    align-items: center;
+    padding: 24px 0 0 32px;
+    margin-bottom: 0;
+    box-sizing: border-box;
+    background: transparent;
+    z-index: 100;
+}
+.logo-row .logo-img {
+    width: 120px !important;
+    height: 120px !important;
+    margin-right: 18px !important;
+    object-fit: contain !important;
 }

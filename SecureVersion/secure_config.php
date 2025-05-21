@@ -1,19 +1,10 @@
 <?php
-// Database configuration
-// $config = [
-// //UNCOMENT THIS TO DO SECURITY TESTS AND COMMENT THE CONFIG CODE BELOW IT
-//     'DB_SERVER' => '127.0.0.1',
-//     'DB_USERNAME' => 'root', 
-//     'DB_PASSWORD' => 'root',
-//     'DB_NAME' => 'securedatabase'
-// ];
-
-//COMMENT THIS OUT WHEN DOING SECURITY TESTS
+// Database configuration using environment variables for flexibility and security
 $config = [
-    'DB_SERVER' => '127.0.0.1',
-    'DB_USERNAME' => 'root',
-    'DB_PASSWORD' => '', 
-    'DB_NAME' => 'securedatabase'
+    'DB_SERVER'   => getenv('DB_SERVER') ?: '127.0.0.1',
+    'DB_USERNAME' => getenv('DB_USERNAME') ?: 'root',
+    'DB_PASSWORD' => getenv('DB_PASSWORD') ?: '',
+    'DB_NAME'     => getenv('DB_NAME') ?: 'securedatabase'
 ];
 
 // Create connection

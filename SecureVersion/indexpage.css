@@ -8,12 +8,23 @@
   background: linear-gradient(to right, #e2e2e2, #c9d6ff);
 }
 .logo-row {
-  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: auto;
   display: flex;
   align-items: center;
-  padding: 32px 0 0 80px;
+  padding: 24px 0 0 32px;
   margin-bottom: 0;
   box-sizing: border-box;
+  background: transparent;
+  z-index: 100;
+}
+.logo-row .logo-img {
+  width: 120px !important;
+  height: 120px !important;
+  margin-right: 18px !important;
+  object-fit: contain !important;
 }
 .main-content {
   flex: 1;
