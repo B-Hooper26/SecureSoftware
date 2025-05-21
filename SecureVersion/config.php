@@ -8,8 +8,7 @@ $config = [
     'DB_NAME' => 'securedatabase'
 ];
 
-//COMMENT THIS OUT WHEN DOING SECURITY TESTS- you will not be able to access the wbeiste as this will perform the github actions.
-// $config = [
+//COMMENT THIS OUT WHEN DOING SECURITY TESTS
 //     'DB_SERVER' => '127.0.0.1',
 //     'DB_USERNAME' => 'root',
 //     'DB_PASSWORD' => '', // <--- empty string

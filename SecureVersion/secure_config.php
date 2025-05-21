@@ -12,7 +12,7 @@
 $config = [
     'DB_SERVER' => '127.0.0.1',
     'DB_USERNAME' => 'root',
-    'DB_PASSWORD' => '', // <--- empty string
+    'DB_PASSWORD' => 'root', // <--- empty string
     'DB_NAME' => 'securedatabase'
 ];
 
